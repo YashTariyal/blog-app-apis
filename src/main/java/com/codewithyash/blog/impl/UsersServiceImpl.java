@@ -46,13 +46,17 @@ public class UsersServiceImpl implements UserService {
 	}
 	
 	@Bean
-	public Consumer<UserDto> userEventReciever() {
+	public Consumer<UserDto> userEventReceiver() {
 	    return userDto -> {
-	        System.out.println("✅ Consumed: " + userDto);
+	        System.out.println("✅ User Event Consumed Successfully!");
+	        System.out.println("User ID: " + userDto.getId());
+	        System.out.println("User Name: " + userDto.getName());
+	        System.out.println("User Email: " + userDto.getEmail());
+	        System.out.println("Full User DTO: " + userDto);
 	    };
 	}
 
-	@ServiceActivator(inputChannel = "userEventReciever-in-0.errors")
+	@ServiceActivator(inputChannel = "userEventReceiver-in-0.errors")
 	public void handleKafkaConsumerError(ErrorMessage message) {
 	    System.err.println("❌ Kafka Consumer Error:");
 	    System.err.println(message.getPayload());
