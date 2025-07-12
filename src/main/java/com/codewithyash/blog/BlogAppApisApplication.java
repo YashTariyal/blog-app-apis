@@ -28,3 +28,14 @@ class ValidationConfiguration {
         return new LocalValidatorFactoryBean();
     }
 }
+
+@Configuration
+class StreamConfiguration {
+    
+    @Bean
+    public String logStartup() {
+        System.out.println("🚀 Spring Cloud Stream Configuration Loaded");
+        System.out.println("📡 Consumer function 'userEventReceiver' should be registered");
+        return "StreamConfiguration initialized";
+    }
+}

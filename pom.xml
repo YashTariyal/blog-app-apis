@@ -88,6 +88,32 @@
       <version>4.2.1</version>
     </dependency>
 
+    <!-- Spring Boot Mail Starter -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
+    <!-- Thymeleaf for email templates -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
+    <!-- Search Dependencies - Temporarily commented out due to version compatibility issues -->
+    <!--
+    <dependency>
+      <groupId>org.hibernate.search</groupId>
+      <artifactId>hibernate-search-mapper-orm</artifactId>
+      <version>6.3.1.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.search</groupId>
+      <artifactId>hibernate-search-backend-lucene</artifactId>
+      <version>6.3.1.Final</version>
+    </dependency>
+    -->
+
     <!-- OpenAPI UI -->
     <dependency>
       <groupId>org.springdoc</groupId>

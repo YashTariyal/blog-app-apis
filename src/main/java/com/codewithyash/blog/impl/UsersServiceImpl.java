@@ -18,6 +18,7 @@ import com.codewithyash.blog.exceptions.ResourceNotFoundException;
 import com.codewithyash.blog.payloads.UserDto;
 import com.codewithyash.blog.repositories.UserRepo;
 import com.codewithyash.blog.services.UserService;
+import com.codewithyash.blog.services.EmailService;
 
 @Service
 public class UsersServiceImpl implements UserService {
@@ -31,6 +32,9 @@ public class UsersServiceImpl implements UserService {
 	@Autowired
 	private StreamBridge streamBridge;
 	
+	@Autowired
+	private EmailService emailService;
+	
 	@Override
 	public UserDto createUser(UserDto userDto) {
 		// TODO Auto-generated method stub
@@ -42,11 +46,21 @@ public class UsersServiceImpl implements UserService {
 		if(send) {
 			System.out.println("User Created Event Published Sucessfully");
 		}
+		
+		// Send welcome email
+		try {
+			emailService.sendWelcomeEmail(dto);
+			System.out.println("✅ Welcome email sent to: " + dto.getEmail());
+		} catch (Exception e) {
+			System.err.println("❌ Failed to send welcome email: " + e.getMessage());
+		}
+		
 		return this.userToDto(savedUser);
 	}
 	
 	@Bean
 	public Consumer<UserDto> userEventReceiver() {
+	    System.out.println("🔧 Registering userEventReceiver consumer function");
 	    return userDto -> {
 	        System.out.println("✅ User Event Consumed Successfully!");
 	        System.out.println("User ID: " + userDto.getId());
