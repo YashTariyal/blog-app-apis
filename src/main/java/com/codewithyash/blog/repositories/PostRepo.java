@@ -23,6 +23,10 @@ public interface PostRepo extends JpaRepository<Post, Integer> {
 	Page<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content, Pageable pageable);
 	List<Post> findByTitleContainingIgnoreCase(String title);
 	
+	// Custom query for debugging
+	@Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword%")
+	List<Post> searchPostsByKeyword(@Param("keyword") String keyword);
+	
 	@Query("SELECT p FROM Post p WHERE " +
 	       "(:keyword IS NULL OR p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND " +
 	       "(:category IS NULL OR p.category.categoryTitle LIKE %:category%) AND " +

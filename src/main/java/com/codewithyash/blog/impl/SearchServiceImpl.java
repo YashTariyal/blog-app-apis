@@ -45,11 +45,15 @@ public class SearchServiceImpl implements SearchService {
         }
         
         String searchTerm = "%" + keyword.toLowerCase() + "%";
-        List<Post> posts = postRepo.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(searchTerm, searchTerm);
         
-        return posts.stream()
+        // Use the custom query for better search results
+        List<Post> posts = postRepo.searchPostsByKeyword(keyword);
+        
+        List<PostDto> postDtos = posts.stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
                 .collect(Collectors.toList());
+        
+        return postDtos;
     }
 
     @Override
@@ -60,11 +64,15 @@ public class SearchServiceImpl implements SearchService {
         
         Pageable pageable = PageRequest.of(page, size);
         String searchTerm = "%" + keyword.toLowerCase() + "%";
-        Page<Post> postPage = postRepo.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(searchTerm, searchTerm, pageable);
         
-        return postPage.getContent().stream()
+        // Use the custom query for better search results
+        List<Post> posts = postRepo.searchPostsByKeyword(keyword);
+        
+        List<PostDto> postDtos = posts.stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
                 .collect(Collectors.toList());
+        
+        return postDtos;
     }
 
     @Override
@@ -74,11 +82,15 @@ public class SearchServiceImpl implements SearchService {
         }
         
         String searchTerm = "%" + keyword.toLowerCase() + "%";
-        List<User> users = userRepo.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(searchTerm, searchTerm);
         
-        return users.stream()
+        // Use the custom query for better search results
+        List<User> users = userRepo.searchUsersByKeyword(keyword);
+        
+        List<UserDto> userDtos = users.stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
+        
+        return userDtos;
     }
 
     @Override
@@ -88,11 +100,15 @@ public class SearchServiceImpl implements SearchService {
         }
         
         String searchTerm = "%" + keyword.toLowerCase() + "%";
-        List<Category> categories = categoryRepo.findByCategoryTitleContainingIgnoreCaseOrCategoryDescriptionContainingIgnoreCase(searchTerm, searchTerm);
         
-        return categories.stream()
+        // Use the custom query for better search results
+        List<Category> categories = categoryRepo.searchCategoriesByKeyword(keyword);
+        
+        List<CategoryDto> categoryDtos = categories.stream()
                 .map(category -> modelMapper.map(category, CategoryDto.class))
                 .collect(Collectors.toList());
+        
+        return categoryDtos;
     }
 
     @Override
@@ -174,22 +190,22 @@ public class SearchServiceImpl implements SearchService {
         String searchTerm = "%" + partialKeyword.toLowerCase() + "%";
         List<String> suggestions = new ArrayList<>();
         
-        // Get post titles
-        List<Post> posts = postRepo.findByTitleContainingIgnoreCase(searchTerm);
+        // Get post titles using custom query
+        List<Post> posts = postRepo.searchPostsByKeyword(partialKeyword);
         suggestions.addAll(posts.stream()
                 .map(Post::getTitle)
                 .limit(5)
                 .collect(Collectors.toList()));
         
-        // Get user names
-        List<User> users = userRepo.findByNameContainingIgnoreCase(searchTerm);
+        // Get user names using custom query
+        List<User> users = userRepo.searchUsersByKeyword(partialKeyword);
         suggestions.addAll(users.stream()
                 .map(User::getName)
                 .limit(3)
                 .collect(Collectors.toList()));
         
-        // Get category titles
-        List<Category> categories = categoryRepo.findByCategoryTitleContainingIgnoreCase(searchTerm);
+        // Get category titles using custom query
+        List<Category> categories = categoryRepo.searchCategoriesByKeyword(partialKeyword);
         suggestions.addAll(categories.stream()
                 .map(Category::getCategoryTitle)
                 .limit(3)
