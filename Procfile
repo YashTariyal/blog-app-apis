@@ -1,0 +1,1 @@
+web: java -jar target/blog-app-apis-0.0.1-SNAPSHOT.jar 
