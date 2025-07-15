@@ -953,3 +953,79 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For more detailed information about specific features, see:
 - [Search Features](SEARCH_FEATURES.md)
 - [Email Setup](EMAIL_SETUP.md) 
+
+---
+
+## 1. **Out of Memory (OOM) Errors**
+
+**What it means:**  
+Your app is using more memory than Railway's free/allocated plan allows, causing it to crash.
+
+**How to fix:**
+- **Reduce memory usage:**  
+  - Disable or remove Kafka integration (since it's not working and is resource-intensive).
+  - Reduce the number of threads or connection pool size in your app.
+  - Make sure you are not loading large datasets into memory.
+- **Increase Railway plan:**  
+  - Upgrade to a paid plan with more memory (if you need Kafka and other heavy features).
+- **Set JVM memory limits:**  
+  Add this environment variable in Railway:
+  ```
+  JAVA_TOOL_OPTIONS=-Xmx256m
+  ```
+  (or try `-Xmx512m` if your plan allows)
+
+---
+
+## 2. **Kafka DNS Resolution Failure**
+
+**What it means:**  
+Your app is trying to connect to `INTERNAL://kafka.railway.internal:29092` but cannot resolve the hostname. This is a common issue with Railway's internal Kafka networking.
+
+**How to fix:**
+- **Disable Kafka integration** in your `application.properties` (recommended for now, since Railway's Kafka is unreliable for most users).
+- **Or, try using the public Kafka URL** (if Railway provides one in the Kafka service "Connect" tab).
+- **Or, use Confluent Cloud or Upstash Kafka** for reliable managed Kafka.
+
+---
+
+## **Recommended Immediate Steps**
+
+### **A. Disable Kafka Integration**
+Comment out all Kafka-related properties in `src/main/resources/application.properties`:
+```properties
+#spring.cloud.stream.kafka.binder.brokers=...
+#spring.cloud.stream.kafka.binder.configuration.spring.json.trusted.packages=*
+#spring.cloud.stream.kafka.binder.configuration.spring.json.use.type.headers=false
+#spring.cloud.stream.kafka.binder.configuration.spring.json.value.default.type=...
+#spring.cloud.stream.bindings.userCreatedEvent-out-0.destination=...
+#spring.cloud.function.definition=...
+#spring.cloud.stream.bindings.userEventReceiver-in-0.destination=...
+# ...and all other spring.cloud.stream.* Kafka lines
+```
+Push and redeploy.
+
+### **B. Set JVM Memory Limit**
+Add this environment variable in Railway:
+```
+JAVA_TOOL_OPTIONS=-Xmx256m
+```
+This limits your app to 256MB RAM, which helps prevent OOM errors on free/low-tier plans.
+
+### **C. Redeploy and Monitor**
+- Your app should now start and stay up.
+- All REST APIs, DB, and email features will work.
+- Kafka/event features will be disabled (no more errors or OOM).
+
+---
+
+## **Summary Table**
+
+| Problem         | Solution                                      |
+|-----------------|-----------------------------------------------|
+| OOM Crashes     | Set `JAVA_TOOL_OPTIONS=-Xmx256m`              |
+| Kafka DNS Error | Disable Kafka in `application.properties`     |
+
+---
+
+**Let me know if you want the Kafka lines commented out for you, or if you want to try a managed Kafka service like Confluent Cloud!** 
